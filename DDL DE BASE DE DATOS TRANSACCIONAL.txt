@@ -1,0 +1,208 @@
+-- transaccional.chofer definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.chofer;
+
+CREATE TABLE transaccional.chofer (	
+	id_chofer serial4 NOT NULL,
+	nombre varchar(50) NULL,
+	apellido varchar(50) NULL,
+	licencia varchar(20) NULL,
+	fecha_expiracion_licencia date NULL,
+	telefono varchar(50) NULL,
+	estado varchar(20) NULL,
+	CONSTRAINT chofer_pkey PRIMARY KEY (id_chofer)
+);
+
+
+-- transaccional.colectivo definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.colectivo;
+
+CREATE TABLE transaccional.colectivo (
+	id_colectivo serial4 NOT NULL,
+	matricula varchar(20) NULL,
+	antiguedad int4 NULL,
+	marca varchar(50) NULL,
+	CONSTRAINT colectivo_pkey PRIMARY KEY (id_colectivo)
+);
+
+
+-- transaccional.horarios definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.horarios;
+
+CREATE TABLE transaccional.horarios (
+	id_horario serial4 NOT NULL,
+	hora_salida time NULL,
+	hora_llegada time NULL,
+	dia_semana varchar(10) NULL,
+	CONSTRAINT horarios_pkey PRIMARY KEY (id_horario)
+);
+
+
+-- transaccional.linea definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.linea;
+
+CREATE TABLE transaccional.linea (
+	id_linea int4 DEFAULT nextval('transaccional.linea_id_seq'::regclass) NOT NULL,
+	nombre numeric NOT NULL,
+	CONSTRAINT linea_pkey PRIMARY KEY (id_linea)
+);
+
+
+-- transaccional.ruta definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.ruta;
+
+CREATE TABLE transaccional.ruta (
+	id_ruta serial4 NOT NULL,
+	nombre_ruta varchar(100) NULL,
+	origen varchar(100) NULL,
+	destino varchar(100) NULL,
+	distancia_km numeric(5, 2) NULL,
+	tiempo_estimado numeric NULL,
+	CONSTRAINT ruta_pkey PRIMARY KEY (id_ruta)
+);
+
+
+-- transaccional.ubicacion definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.ubicacion;
+
+CREATE TABLE transaccional.ubicacion (
+	id_ubicacion serial4 NOT NULL,
+	codigo_postal varchar(10) NULL,
+	barrio varchar(50) NULL,
+	localidad varchar(50) NULL,
+	provincia varchar(50) NULL,
+	CONSTRAINT ubicacion_pkey PRIMARY KEY (id_ubicacion)
+);
+
+
+-- transaccional.asignacion_conductor definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.asignacion_conductor;
+
+CREATE TABLE transaccional.asignacion_conductor (
+	id_asignacion serial4 NOT NULL,
+	id_conductor int4 NULL,
+	id_horario int4 NULL,
+	fecha_asignacion date NULL,
+	CONSTRAINT asignacion_conductor_pkey PRIMARY KEY (id_asignacion),
+	CONSTRAINT asignacion_conductor_id_conductor_fkey FOREIGN KEY (id_conductor) REFERENCES transaccional.chofer(id_chofer),
+	CONSTRAINT asignacion_conductor_id_horario_fkey FOREIGN KEY (id_horario) REFERENCES transaccional.horarios(id_horario)
+);
+
+
+-- transaccional.asignacion_vehiculo definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.asignacion_vehiculo;
+
+CREATE TABLE transaccional.asignacion_vehiculo (
+	id_asignacion serial4 NOT NULL,
+	id_horario int4 NULL,
+	id_vehiculo int4 NULL,
+	fecha_asignacion date NULL,
+	CONSTRAINT asignacion_vehiculo_pkey PRIMARY KEY (id_asignacion),
+	CONSTRAINT asignacion_vehiculo_id_horario_fkey FOREIGN KEY (id_horario) REFERENCES transaccional.horarios(id_horario),
+	CONSTRAINT asignacion_vehiculo_id_vehiculo_fkey FOREIGN KEY (id_vehiculo) REFERENCES transaccional.colectivo(id_colectivo)
+);
+
+
+-- transaccional.horario_y_rutas definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.horario_y_rutas;
+
+CREATE TABLE transaccional.horario_y_rutas (
+	id_ruta int4 NOT NULL,
+	id_horario int4 NOT NULL,
+	CONSTRAINT horario_y_rutas_pkey PRIMARY KEY (id_ruta, id_horario),
+	CONSTRAINT horario_y_rutas_id_horario_fkey FOREIGN KEY (id_horario) REFERENCES transaccional.horarios(id_horario),
+	CONSTRAINT horario_y_rutas_id_ruta_fkey FOREIGN KEY (id_ruta) REFERENCES transaccional.ruta(id_ruta)
+);
+
+
+-- transaccional.linea_vehiculo definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.linea_vehiculo;
+
+CREATE TABLE transaccional.linea_vehiculo (
+	linea_id int4 NOT NULL,
+	vehiculo_id int4 NOT NULL,
+	fecha_de_asignacion date NULL,
+	CONSTRAINT linea_vehiculo_pkey PRIMARY KEY (linea_id, vehiculo_id),
+	CONSTRAINT linea_vehiculo_linea_id_fkey FOREIGN KEY (linea_id) REFERENCES transaccional.linea(id_linea),
+	CONSTRAINT linea_vehiculo_vehiculo_id_fkey FOREIGN KEY (vehiculo_id) REFERENCES transaccional.colectivo(id_colectivo)
+);
+
+
+-- transaccional.parada definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.parada;
+
+CREATE TABLE transaccional.parada (
+	id_parada serial4 NOT NULL,
+	id_ubicacion int4 NULL,
+	direccion varchar(100) NULL,
+	nombre varchar(50) NULL,
+	CONSTRAINT parada_pkey PRIMARY KEY (id_parada),
+	CONSTRAINT parada_id_ubicacion_fkey FOREIGN KEY (id_ubicacion) REFERENCES transaccional.ubicacion(id_ubicacion)
+);
+
+
+-- transaccional.clientes definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.clientes;
+
+CREATE TABLE transaccional.clientes (
+	id_cliente serial4 NOT NULL,
+	id_parada int4 NULL,
+	genero varchar(10) NULL,
+	tipo_de_cliente varchar(50) NULL,
+	fecha_llegada timestamp NULL,
+	fecha_salida timestamp NULL,
+	colectivo_id int4 NULL,
+	CONSTRAINT clientes_pkey PRIMARY KEY (id_cliente),
+	CONSTRAINT clientes_id_parada_fkey FOREIGN KEY (id_parada) REFERENCES transaccional.parada(id_parada),
+	CONSTRAINT fk_colectivo FOREIGN KEY (colectivo_id) REFERENCES transaccional.colectivo(id_colectivo)
+);
+
+
+-- transaccional.colectivo_parada definition
+
+-- Drop table
+
+-- DROP TABLE transaccional.colectivo_parada;
+
+CREATE TABLE transaccional.colectivo_parada (
+	id_colectivo int4 NOT NULL,
+	id_parada int4 NOT NULL,
+	CONSTRAINT colectivo_parada_pkey PRIMARY KEY (id_colectivo, id_parada),
+	CONSTRAINT colectivo_parada_id_colectivo_fkey FOREIGN KEY (id_colectivo) REFERENCES transaccional.colectivo(id_colectivo),
+	CONSTRAINT colectivo_parada_id_parada_fkey FOREIGN KEY (id_parada) REFERENCES transaccional.parada(id_parada)
+);

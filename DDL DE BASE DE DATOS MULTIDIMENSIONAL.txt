@@ -1,0 +1,91 @@
+CREATE TABLE "CuboMultidimensional".dim_cliente (
+	id_cliente serial4 NOT NULL,
+	tipo_cliente varchar(50) NULL,
+	CONSTRAINT dim_cliente_pkey PRIMARY KEY (id_cliente)
+);
+
+
+-- "CuboMultidimensional".dim_clima definition
+
+-- Drop table
+
+-- DROP TABLE "CuboMultidimensional".dim_clima;
+
+CREATE TABLE "CuboMultidimensional".dim_clima (
+	id_clima serial4 NOT NULL,
+	condicion_climatica varchar(50) NULL,
+	CONSTRAINT dim_clima_pkey PRIMARY KEY (id_clima)
+);
+
+
+-- "CuboMultidimensional".dim_colectivo definition
+
+-- Drop table
+
+-- DROP TABLE "CuboMultidimensional".dim_colectivo;
+
+CREATE TABLE "CuboMultidimensional".dim_colectivo (
+	id_colectivo serial4 NOT NULL,
+	numero_colectivo varchar(10) NULL,
+	matricula varchar(15) NULL,
+	CONSTRAINT dim_colectivo_pkey PRIMARY KEY (id_colectivo)
+);
+
+
+-- "CuboMultidimensional".dim_fecha definition
+
+-- Drop table
+
+-- DROP TABLE "CuboMultidimensional".dim_fecha;
+
+CREATE TABLE "CuboMultidimensional".dim_fecha (
+	id_fecha serial4 NOT NULL,
+	dia int4 NOT NULL,
+	mes int4 NOT NULL,
+	ano int4 NOT NULL,
+	hora int4 NOT NULL,
+	CONSTRAINT dim_fecha_pkey PRIMARY KEY (hora, dia, mes, ano)
+);
+
+
+-- "CuboMultidimensional".dim_parada definition
+
+-- Drop table
+
+-- DROP TABLE "CuboMultidimensional".dim_parada;
+
+CREATE TABLE "CuboMultidimensional".dim_parada (
+	id_parada serial4 NOT NULL,
+	parada varchar(50) NULL,
+	barrio varchar(50) NULL,
+	localidad varchar(50) NULL,
+	provincia varchar(50) NULL,
+	CONSTRAINT dim_parada_pkey PRIMARY KEY (id_parada)
+);
+
+
+-- "CuboMultidimensional".fact_transporte definition
+
+-- Drop table
+
+-- DROP TABLE "CuboMultidimensional".fact_transporte;
+
+CREATE TABLE "CuboMultidimensional".fact_transporte (
+	id_hecho serial4 NOT NULL,
+	avg_tiempo_espera numeric(10, 2) NULL,
+	cantidad_personas_en_parada int4 NULL,
+	id_clima int4 NULL,
+	id_cliente int4 NULL,
+	id_colectivo int4 NULL,
+	id_parada int4 NULL,
+	hora int4 NULL,
+	dia int4 NULL,
+	mes int4 NULL,
+	ano int4 NULL,
+	CONSTRAINT fact_transporte_pkey PRIMARY KEY (id_hecho),
+	CONSTRAINT fk_cliente FOREIGN KEY (id_cliente) REFERENCES "CuboMultidimensional".dim_cliente(id_cliente),
+	CONSTRAINT fk_clima FOREIGN KEY (id_clima) REFERENCES "CuboMultidimensional".dim_clima(id_clima),
+	CONSTRAINT fk_colectivo FOREIGN KEY (id_colectivo) REFERENCES "CuboMultidimensional".dim_colectivo(id_colectivo),
+	CONSTRAINT fk_fecha FOREIGN KEY (hora,dia,mes,ano) REFERENCES "CuboMultidimensional".dim_fecha(hora,dia,mes,ano),
+	CONSTRAINT fk_parada FOREIGN KEY (id_parada) REFERENCES "CuboMultidimensional".dim_parada(id_parada)
+);
